@@ -1,0 +1,319 @@
+# lear
+# Ball x Cubes
+
+# Welcome to the BxC
+# This game is made in pygame
+
+
+import pygame
+import random as rd
+
+
+if __name__ == "__main__":
+    pygame.init()
+
+    # Screen
+    WIDTH = 1200
+    HEIGHT = 800
+
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+
+    # Background
+    background = pygame.image.load("cubes_destroyer_bg.jpg")
+
+
+    # Title
+    pygame.display.set_caption("Ball x Cubes")
+
+
+    # Icon
+    icon = pygame.image.load("ball_icon.png")
+
+    pygame.display.set_icon(icon)
+
+
+    # Player
+    class Player:
+        def __init__(self, rectangle, rectangle_X, rectangle_Y, ball, ball_X, ball_Y):
+            self.rectangle = rectangle
+            self.rectangle_X = rectangle_X
+            self.rectangle_Y = rectangle_Y
+
+            self.ball = ball
+            self.ball_X = ball_X
+            self.ball_Y = ball_Y
+
+        def get_rectangle(self):
+            screen.blit(self.rectangle, (self.rectangle_X, self.rectangle_Y))
+
+        def get_ball(self):
+            screen.blit(self.ball, (self.ball_X, self.ball_Y))
+
+    rect = pygame.image.load("paddle_3.png")
+    rect_x = 526
+    rect_y = 660
+    rect_movement = 0
+    rect_speed = 1.5
+
+    ball = pygame.image.load("ball_3.png")
+    ball_x = 584
+    ball_y = 200
+    ball_rd = rd.randint(0, 1)
+    ball_movement_x = 0
+    ball_movement_y = 0
+
+    if ball_rd == 0:
+        ball_movement_x = 1
+        ball_movement_y = 1
+
+    else:
+        ball_movement_x = -1
+        ball_movement_y = 1
+
+    USER = Player(rect, rect_x, rect_y, ball, ball_x, ball_y)
+
+
+    # Target
+    class Target:
+        def __init__(self, kiwi, kiwi_X, kiwi_Y, pineapple, pineapple_X, pineapple_Y, tofu, tofu_X, tofu_Y, sushi, sushi_X, sushi_Y):
+            self.kiwi = kiwi
+            self.kiwi_X = kiwi_X
+            self.kiwi_Y = kiwi_Y
+
+            self.pineapple = pineapple
+            self.pineapple_X = pineapple_X
+            self.pineapple_Y = pineapple_Y
+
+            self.tofu = tofu
+            self.tofu_X = tofu_X
+            self.tofu_Y = tofu_Y
+
+            self.sushi = sushi
+            self.sushi_X = sushi_X
+            self.sushi_Y = sushi_Y
+
+        def get_kiwi(self):
+            screen.blit(self.kiwi, (self.kiwi_X, self.kiwi_Y))
+
+        def get_pineapple(self):
+            screen.blit(self.pineapple, (self.pineapple_X, self.pineapple_Y))
+
+        def get_tofu(self):
+            screen.blit(self.tofu, (self.tofu_X, self.tofu_Y))
+
+        def get_sushi(self):
+            screen.blit(self.sushi, (self.sushi_X, self.sushi_Y))
+
+    kiwi = pygame.image.load("kiwi.png")
+    kiwi_x = rd.randint(100, 1100)
+    kiwi_y = rd.randint(50, 400)
+
+    pineapple = pygame.image.load("pineapple.png")
+    pineapple_x = rd.randint(100, 1100)
+    pineapple_y = rd.randint(50, 400)
+
+    tofu = pygame.image.load("tofu.png")
+    tofu_x = rd.randint(100, 1100)
+    tofu_y = rd.randint(50, 400)
+
+    sushi = pygame.image.load("sushi.png")
+    sushi_x = rd.randint(100, 1100)
+    sushi_y = rd.randint(50, 400)
+
+    TAR = Target(kiwi, kiwi_x, kiwi_y, pineapple, pineapple_x, pineapple_y, tofu, tofu_x, tofu_y, sushi, sushi_x, sushi_y)
+
+
+    # Statistics
+    text = pygame.font.Font("freesansbold.ttf", 52)
+
+    class Statistics:
+        def __init__(self, score, speed):
+            self.score = score
+            self.speed = speed
+
+        def get_score(self):
+            score_text = text.render(f"Score : {self.score}", True, (60, 60, 160))
+            screen.blit(score_text, (30, 30))
+
+        def get_speed(self):
+            speed_text = text.render(f"{self.speed} : Speed", True, (180, 60, 60))
+            screen.blit(speed_text, (880, 30))
+
+    score = 0
+    speed = abs(ball_movement_x) + abs(ball_movement_y)
+
+    STAT = Statistics(score, speed)
+
+
+    # Ending
+    class Ending:
+        def __init__(self):
+            self.win = "You Win!"
+            self.lose = "You Lost!"
+
+        def get_win(self):
+            win_text = text.render(self.win, True, (230, 230, 230))
+            screen.blit(win_text, (460, 250))
+
+        def get_lose(self):
+            lose_text = text.render(self.lose, True, (230, 230, 230))
+            screen.blit(lose_text, (460, 250))
+
+
+    END = Ending()
+
+
+    # Sound
+    WINNING = pygame.mixer.Sound("TTT_win.wav")
+    LOSING = pygame.mixer.Sound("losing.wav")
+    SCORE_UP = pygame.mixer.Sound("score_gaining.wav")
+    EDGE_HITTED = pygame.mixer.Sound("jump.wav")
+
+    WN = True
+    LS = True
+    DONE = False
+
+    running = True
+    while running:
+        screen.blit(background, (0, 0))
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT and USER.rectangle_X > 0:
+                    rect_movement = -(rect_speed)
+
+                if event.key == pygame.K_RIGHT and USER.rectangle_X < 1053:
+                    rect_movement = rect_speed
+
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    rect_movement = 0
+
+
+        # Paddle Movement
+        if not(DONE):
+            USER.rectangle_X += rect_movement
+
+        if USER.rectangle_X <= 0 or USER.rectangle_X >= 1053:
+            rect_movement = 0
+
+
+        # Ball Movement        
+        if USER.ball_X <= 0 or USER.ball_X >= 1168:
+            ball_movement_x *= -1
+            rect_speed += 0.02
+            EDGE_HITTED.play()
+
+            if ball_movement_x < 0:
+                ball_movement_x -= 0.03
+
+            else:
+                ball_movement_x += 0.03
+
+        if USER.ball_Y <= 0:
+            ball_movement_y *= -1
+            rect_speed += 0.02
+            EDGE_HITTED.play()
+
+            if ball_movement_y < 0:
+                ball_movement_y -= 0.03
+
+            else:
+                ball_movement_y += 0.03
+
+        if not(DONE):
+            USER.ball_X += ball_movement_x
+            USER.ball_Y += ball_movement_y
+
+
+        # Hitting Paddle
+        if USER.ball_X - 152 < USER.rectangle_X and USER.ball_X + 16 > USER.rectangle_X and USER.ball_Y >= 628 and USER.ball_Y < 648:
+            ball_movement_y *= -1
+            rect_speed += 0.02
+            EDGE_HITTED.play()
+
+            if ball_movement_y < 0:
+                ball_movement_y -= 0.03
+
+            else:
+                ball_movement_y += 0.03
+
+        STAT.speed = round(abs(ball_movement_x) + abs(ball_movement_y), 2)
+
+
+        # Getting Targets
+        if USER.ball_X - 60 < TAR.kiwi_X and USER.ball_X + 4 > TAR.kiwi_X and USER.ball_Y - 60 < TAR.kiwi_Y and USER.ball_Y + 4 > TAR.kiwi_Y:
+            STAT.score += 1
+            TAR.kiwi_X = rd.randint(100, 1100)
+            TAR.kiwi_Y = rd.randint(50, 400)
+            SCORE_UP.play()
+
+        if USER.ball_X - 60 < TAR.pineapple_X and USER.ball_X + 4 > TAR.pineapple_X and USER.ball_Y - 60 < TAR.pineapple_Y and USER.ball_Y + 4 > TAR.pineapple_Y:
+            STAT.score += 1
+            TAR.pineapple_X = rd.randint(100, 1100)
+            TAR.pineapple_Y = rd.randint(50, 400)
+            SCORE_UP.play()
+
+        if USER.ball_X - 60 < TAR.tofu_X and USER.ball_X + 4 > TAR.tofu_X and USER.ball_Y - 60 < TAR.tofu_Y and USER.ball_Y + 4 > TAR.tofu_Y:
+            STAT.score += 1
+            TAR.tofu_X = rd.randint(100, 1100)
+            TAR.tofu_Y = rd.randint(50, 400)
+            SCORE_UP.play()
+
+        if USER.ball_X - 60 < TAR.sushi_X and USER.ball_X + 4 > TAR.sushi_X and USER.ball_Y - 60 < TAR.sushi_Y and USER.ball_Y + 4 > TAR.sushi_Y:
+            STAT.score += 1
+            TAR.sushi_X = rd.randint(100, 1100)
+            TAR.sushi_Y = rd.randint(50, 400)
+            SCORE_UP.play()
+
+
+        # Time
+        clock = pygame.time.Clock()
+        if not(DONE):
+            clocker = round(pygame.time.get_ticks() / 1000, 2)
+        clock_text = pygame.font.Font("freesansbold.ttf", 40)
+
+        def time():
+            clock_time = clock_text.render(str(clocker), True, (160, 180, 180))
+            screen.blit(clock_time, (550, 30))
+
+        time()
+
+
+        # Winning
+        if STAT.score >= 100:
+            DONE = True
+            END.get_win()
+
+            if WN:
+                WINNING.play()
+                WN = False
+
+        if USER.ball_Y >= 768:
+            DONE = True
+            END.get_lose()
+
+            if LS:
+                LOSING.play()
+                LS = False
+
+
+        # Animation
+        TAR.get_kiwi()
+        TAR.get_pineapple()
+        TAR.get_sushi()
+        TAR.get_tofu()
+
+        USER.get_rectangle()
+        USER.get_ball()
+
+        STAT.get_score()
+        STAT.get_speed()
+
+        pygame.display.update()
