@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
 
     # Background
-    background = pygame.image.load("cubes_destroyer_bg.jpg")
+    background = pygame.image.load("spi_cave.jpg")
 
 
     # Title
